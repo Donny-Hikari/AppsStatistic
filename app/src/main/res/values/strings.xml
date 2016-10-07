@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AppStatistic</string>
+    <string name="app_name">AppsStatistic</string>
     <string name="screenUsageService_name">ScreenUsageTrackService</string>
     <string name="dataSyncService_name">DataSyncService</string>
     <string name="str_appsusage">应用使用时间统计</string>
