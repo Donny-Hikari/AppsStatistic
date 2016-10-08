@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/id_MainContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/id_ScreenOnTime_Container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="15dp"
+            android:text="@string/str_screenusage"
+            android:textColor="#000000"
+            android:textSize="20sp" />
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/id_ScreenOnTime_Hour"
+                style="@style/tvScreenTime"
+                android:text="0" />
+
+            <TextView
+                style="@style/tvScreenTimeSub"
+                android:text="h" />
+
+            <TextView
+                android:id="@+id/id_ScreenOnTime_Minute"
+                style="@style/tvScreenTime"
+                android:text="0" />
+
+            <TextView
+                style="@style/tvScreenTimeSub"
+                android:text="m" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/id_btnToSurvey"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="填写问卷"
+        android:textSize="20sp" />
+
+    <fragment
+        android:id="@+id/id_appsusage"
+        android:name="com.donny.appstatistic.AppsUsageFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/id_btnToSurvey"
+        android:layout_below="@id/id_ScreenOnTime_Container" />
+
+</RelativeLayout>

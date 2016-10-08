@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SurveyActivity">
+
+    <FrameLayout
+        android:id="@+id/ig_wallpaper"
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:layout_alignParentTop="true"
+        android:background="#83D0F5" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/ig_wallpaper"
+        android:layout_marginBottom="18dp"
+        android:paddingLeft="@dimen/activity_vertical_margin"
+        android:paddingRight="@dimen/activity_vertical_margin"
+        android:text="@string/survey_title"
+        android:textColor="#FFFFFF"
+        android:textSize="45sp" />
+
+    <TextView
+        android:id="@+id/survey_schedule"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/ig_wallpaper"
+        android:layout_marginBottom="20dp"
+        android:gravity="right"
+        android:paddingLeft="@dimen/activity_vertical_margin"
+        android:paddingRight="@dimen/activity_vertical_margin"
+        android:text="0/21"
+        android:textColor="#FFFFFF"
+        android:textSize="25sp"
+        android:visibility="gone" />
+
+    <FrameLayout
+        android:id="@+id/id_questionnaire"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ig_wallpaper" />
+
+    <include
+        layout="@layout/fragment_question"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ig_wallpaper"
+        android:visibility="gone" />
+
+    <include
+        layout="@layout/fragment_introduction"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ig_wallpaper"
+        android:visibility="gone" />
+
+</RelativeLayout>

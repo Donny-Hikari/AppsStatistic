@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:orientation="vertical"
+    android:paddingBottom="20dp">
+
+    <TextView
+        android:id="@+id/survey_question"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="15dp"
+        android:layout_marginTop="20dp"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:text="此处应有问题。"
+        android:textColor="#000000"
+        android:textSize="26sp" />
+    <!-->我总感觉明天世界就要毁灭.<-->
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/survey_question">
+
+        <RadioButton
+            android:id="@+id/option1"
+            style="@style/btnOption"
+            android:text="非常符合" />
+
+        <RadioButton
+            android:id="@+id/option2"
+            style="@style/btnOption"
+            android:text="大部分符合" />
+
+        <RadioButton
+            android:id="@+id/option3"
+            style="@style/btnOption"
+            android:text="部分符合" />
+
+        <RadioButton
+            android:id="@+id/option4"
+            style="@style/btnOption"
+            android:text="一点不符合" />
+
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/survey_tip"
+        style="@style/tvTips"
+        android:layout_alignParentBottom="true"
+        android:text="@string/survey_autocontinue" />
+
+</RelativeLayout>

@@ -370,6 +370,10 @@ class CommonFunction {
     private static final String sScreenUsageAppname = "Screen";
     //private static String sAppsUsageFilename = "AppsUsage.csv";
 
+    public static String getScreenUsageAppname() {
+        return sScreenUsageAppname;
+    }
+
     /* ---- AppsUsage: Database ---- */
 
     public static String getDatabasePath(Context context) {
@@ -811,7 +815,7 @@ class CommonFunction {
 
         try {
             indata.skip((8 + 1) * 2);
-            beginDate = readChars(indata, 8);
+            beginDate = readChars(indata, 10);
         } catch (IOException e) {
             e.printStackTrace();
             try {
@@ -1044,6 +1048,90 @@ class CommonFunction {
         }
         Log.d(sTagUserInfo, "ID loaded as " + sID);
         return sID;
+    }
+
+
+    /*
+    * Survey Activity Interface for Fragment
+    */
+
+    public abstract interface FragmentListener {
+
+        void movetoFirstQuestion();
+
+        void movetoNextQuestion(int selectedIndex);
+
+        String getFirstQuestion();
+
+    }
+
+    /*
+    * Survey - Questionnaire files.
+    */
+
+    private static final String sSurveyPath = "/Data/Survey/";
+
+    public static String getSurveyPath(Context context) {
+        String sFullDataPath = context.getFilesDir() + sSurveyPath;
+        File destDir = new File(sFullDataPath);
+        if (!destDir.exists()) {
+            destDir.mkdirs();
+        }
+        return sFullDataPath;
+    }
+
+    public static String getSurveyFilename(Context context, MyDate myDate) {
+        return getSurveyPath(context) + "Survey_" + myDate.getDateWithoutSymbol() + ".csv";
+    }
+
+    public static String getSurveyFilenameToday(Context context) {
+        MyDate myDate = new MyDate(Calendar.getInstance());
+        return getSurveyFilename(context, myDate);
+    }
+
+    public static boolean SaveSurveyData(Context context, int[] selections) {
+        FileOutputStream outfile = null;
+        DataOutputStream outdata = null;
+
+        try {
+            outfile = new FileOutputStream(getSurveyFilenameToday(context)); // create mode
+            outdata = new DataOutputStream(outfile);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+            try {
+                if (outfile != null) outfile.close();
+                if (outdata != null) outdata.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            return false;
+        }
+
+        try {
+            for (int i = 0; i < selections.length; ++i) {
+                outdata.writeChars(String.format("Q%d,%d\r\n", i + 1, selections[i]));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            try {
+                outfile.close();
+                outdata.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            return false;
+        }
+        try {
+            outfile.close();
+            outdata.close();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+
+        return true;
     }
 
 }

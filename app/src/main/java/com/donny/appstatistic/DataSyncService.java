@@ -61,7 +61,7 @@ public class DataSyncService extends Service {
             if (!CommonFunction.UploadFile(uploadUrl, sUserInfo, sFileToUpload))
                 continue;
 
-            // Upload AppsUsage.csv
+            // Upload AppsUsage.csv ( a temp file from database )
             sFileToUpload = CommonFunction.getAppsUsageFilename(context, myDate);
             CommonFunction.ExportAppsUsageToCSVFile(context, myDate, sFileToUpload);
             if (!CommonFunction.UploadFile(uploadUrl, sUserInfo, sFileToUpload)) {
@@ -73,6 +73,11 @@ public class DataSyncService extends Service {
             File fileToUpload = new File(sFileToUpload);
             fileToUpload.delete();
             Log.d(sLocalTag, sFileToUpload + " has been deleted.");
+
+            // Upload Survey.csv
+            sFileToUpload = CommonFunction.getSurveyFilename(context, myDate);
+            if (!CommonFunction.UploadFile(uploadUrl, sUserInfo, sFileToUpload))
+                continue;
 
             CommonFunction.setDataUploadStatus_Uploaded(context, myDate);
         }

@@ -75,6 +75,8 @@ public class AppsUsageFragment extends Fragment {
         while (cs.moveToNext()) {
             map = new HashMap<>();
             appname = cs.getString(cs.getColumnIndex(CommonFunction.DBAppUsage.COL_APPNAME));
+            if (appname.equals(CommonFunction.getScreenUsageAppname()))
+                continue;
             usage = cs.getString(cs.getColumnIndex(CommonFunction.DBAppUsage.COL_USAGE));
             map.put("Appname", appname);
             map.put("TotalTime", usage);
@@ -95,7 +97,7 @@ public class AppsUsageFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_appsusage, container, false);
+        View view = inflater.inflate(R.layout.fragment_appsusage2, container, false);
         usageList = (GridView) view.findViewById(R.id.id_appsusage_list);
         updateAppsList();
         registerMyReceiver();

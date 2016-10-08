@@ -1,10 +1,12 @@
 <resources>
-    <string name="app_name">AppsStatistic</string>
+
+    <string name="app_name">Apps Statistic</string>
     <string name="screenUsageService_name">ScreenUsageTrackService</string>
     <string name="dataSyncService_name">DataSyncService</string>
-    <string name="str_appsusage">应用使用时间统计</string>
+    <string name="str_appsusage">应用使用时间统计:</string>
     <string name="str_screenusage">今日屏幕已点亮:</string>
     <string name="title_activity_login">登入</string>
+    <string name="title_activity_survey">Survey</string>
 
     <!-- Strings related to login -->
     <string name="prompt_idmunber">Enter the id number from provider.</string>
@@ -13,4 +15,11 @@
     <string name="login_tip_detail">请从软件提供商出获取。本软件仅供科学研究用途。</string>
     <string name="login_tip2">• 请确保该ID输入正确</string>
     <string name="login_tip2_detail">该ID十分重要，一旦确认不可更改。请再三确认输入无误后继续。</string>
+
+    <!-- Strings related to survey -->
+    <string name="survey_title">Survey</string>
+    <string name="survey_prompt">一共只有21道选择题，恳请您仔细阅读下面各题，然后根据过去一周之内符合您的实际情况，选择相应的选项。您的回答没有对错之分，所以不要在以下任何一项上花太多时间。</string>
+    <string name="survey_continue">准备好了吗，那就开始吧！</string>
+    <string name="survey_autocontinue">*点击选项后将会自动跳到下一题。</string>
+
 </resources>

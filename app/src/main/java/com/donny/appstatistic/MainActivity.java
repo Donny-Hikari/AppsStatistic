@@ -36,8 +36,9 @@ public class MainActivity extends AppCompatActivity {
 
     //private Button btnAppStat;
     private TextView tvScreenOnTime_hour, tvScreenOnTime_minute;
-    private CommonFunction.MyTime screenOnTotalTime = new CommonFunction.MyTime();
-    private CommonFunction.MyTime screenOnLastTime;
+    private Button btnSurvey;
+    //private CommonFunction.MyTime screenOnTotalTime = new CommonFunction.MyTime();
+    //private CommonFunction.MyTime screenOnLastTime;
 
     private Handler handler = new Handler() {
         @Override
@@ -59,12 +60,14 @@ public class MainActivity extends AppCompatActivity {
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            /*
             if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
                 Log.d(sTag, "Screen On Boradcast Received.");
                 screenOnTotalTime = CommonFunction.LoadScreenUsage_TotalTime(context);
                 screenOnLastTime = new CommonFunction.MyTime(Calendar.getInstance());
                 handler.dispatchMessage(new Message());
-            } else if (intent.getAction().equals(Intent.ACTION_TIME_TICK)) {
+            } else */
+            if (intent.getAction().equals(Intent.ACTION_TIME_TICK)) {
                 Log.d(sTag, "Time Tick Boradcast Received.");
                 handler.dispatchMessage(new Message());
             }
@@ -73,8 +76,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void registerMyReceiver() {
         final IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_SCREEN_ON);
-        filter.addAction(Intent.ACTION_SCREEN_OFF);
+        //filter.addAction(Intent.ACTION_SCREEN_ON);
+        //filter.addAction(Intent.ACTION_SCREEN_OFF);
         filter.addAction(Intent.ACTION_TIME_TICK);
         registerReceiver(receiver, filter);
     }
@@ -82,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main2);
         startService(new Intent(this, ScreenUsageTrackService.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         startService(new Intent(this, DataSyncService.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
 
@@ -92,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
         //btnAppStat = (Button) findViewById(R.id.btn_AppStatistic);
         tvScreenOnTime_hour = (TextView) findViewById(R.id.id_ScreenOnTime_Hour);
         tvScreenOnTime_minute = (TextView) findViewById(R.id.id_ScreenOnTime_Minute);
+        btnSurvey = (Button) findViewById(R.id.id_btnToSurvey);
 
         /*
         btnAppStat.setOnClickListener(new Button.OnClickListener() {
@@ -105,19 +109,33 @@ public class MainActivity extends AppCompatActivity {
 
         });
         */
-        screenOnTotalTime = CommonFunction.LoadScreenUsage_TotalTime(getApplicationContext());
-        screenOnLastTime = CommonFunction.LoadScreenUsage_BeginStatus(getApplicationContext());
+        //screenOnTotalTime = CommonFunction.LoadScreenUsage_TotalTime(getApplicationContext());
+        //screenOnLastTime = CommonFunction.LoadScreenUsage_BeginStatus(getApplicationContext());
         reLoadScreenOnTime();
         registerMyReceiver();
         //handler.postDelayed(runnable, 1000);
+
+        btnSurvey.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, SurveyActivity.class));
+            }
+        });
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(receiver);
     }
 
     private void reLoadScreenOnTime() {
-        CommonFunction.MyTime screenOnTime = new CommonFunction.MyTime(Calendar.getInstance());
-        screenOnTime = screenOnTime.sub(screenOnLastTime);
-        screenOnTime = screenOnTime.add(screenOnTotalTime);
-        Log.d(sTag, "Screen On Last Time: " + screenOnLastTime.hour + "h " + screenOnLastTime.min + "m");
-        Log.d(sTag, "Screen On Total Time: " + screenOnTotalTime.hour + "h " + screenOnTotalTime.min + "m");
+        CommonFunction.MyTime screenOnTime = CommonFunction.LoadScreenUsage_TotalTime(getApplicationContext());
+        //CommonFunction.MyTime screenOnTime = new CommonFunction.MyTime(Calendar.getInstance());
+        //screenOnTime = screenOnTime.sub(screenOnLastTime);
+        //screenOnTime = screenOnTime.add(screenOnTotalTime);
+        //Log.d(sTag, "Screen On Last Time: " + screenOnLastTime.hour + "h " + screenOnLastTime.min + "m");
+        //Log.d(sTag, "Screen On Total Time: " + screenOnTotalTime.hour + "h " + screenOnTotalTime.min + "m");
         Log.d(sTag, "Screen On Time: " + screenOnTime.hour + "h " + screenOnTime.min + "m");
         tvScreenOnTime_hour.setText(String.valueOf(screenOnTime.hour));//最终显示
         tvScreenOnTime_minute.setText(String.valueOf(screenOnTime.min));//最终显示
