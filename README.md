@@ -14,13 +14,13 @@ An application to record your usage of the screen and your apps on your phone.
 
 ###Screenshot
 <div align="center">
-<img src="/docs/v2.splash_screen.png" alt="Splash Screen" height="512" style="margin-right:30px;"/>
-<img src="/docs/v2.login_screen.png" alt="Login Activity" height="512" style="margin-left:30px;"/>
+<img src="/docs/v2.splash_screen.png" alt="Splash Screen" height="512" />
+<img src="/docs/v2.login_screen.png" alt="Login Activity" height="512" />
 </div>
 <br/>
 <div align="center">
-<img src="/docs/v2.main_screen.png" alt="Main Activity" height="512" style="margin-right:30px;"/>
-<img src="/docs/v2.survey_screen1.png" alt="Survey Introduction" height="512" style="margin-left:30px;"/>
+<img src="/docs/v2.main_screen.png" alt="Main Activity" height="512" />
+<img src="/docs/v2.survey_screen1.png" alt="Survey Introduction" height="512" />
 </div>
 
 ###Design
@@ -43,5 +43,12 @@ An application to record your usage of the screen and your apps on your phone.
 <img src="/docs/survey_design.png" alt="Survey Design" />
 
 ####Screenshot
+<div align="center">
 <img src="/docs/v2.survey_screen1.png" alt="Survey Introduction" height="512" />
 <img src="/docs/v2.survey_screen2.png" alt="Survey Questionnaire" height="512" />
+</div>
+
+##Author
+* Author: Donny Hikari
+* Mail: [donny.hikari@gmail.com](mailto:donny.hikari@gmail.com "Mail")
+* Blogs: <a href="https://donny-hikari.github.io/Blogs/" target="_blank">Donny's Blogs</a>
