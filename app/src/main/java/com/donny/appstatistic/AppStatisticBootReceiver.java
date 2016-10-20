@@ -15,6 +15,7 @@ public class AppStatisticBootReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         // Start ScreenUsageTrackService
         context.startService(new Intent(context, ScreenUsageTrackService.class));
+        context.startService(new Intent(context, PushPromotionService.class));
         context.startService(new Intent(context, DataSyncService.class));
     }
 

@@ -25,7 +25,6 @@
             android:theme="@style/FullscreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -38,6 +37,21 @@
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".LoginActivity"
+            android:label="@string/title_activity_login"
+            android:theme="@style/FullscreenTheme" />
+
+        <activity
+            android:name=".SurveyActivity"
+            android:label="@string/title_activity_survey"
+            android:theme="@style/FullscreenTheme" />
+
+        <activity
+            android:name=".AboutActivity"
+            android:label="@string/title_activity_about"
+            android:theme="@style/AppTheme" />
 
         <receiver android:name=".AppStatisticBootReceiver">
             <intent-filter>
@@ -58,27 +72,32 @@
                 <action android:name="@string/screenUsageService_name" />
             </intent-filter>
         </service>
+
+        <service
+            android:name=".PushPromotionService"
+            android:enabled="true"
+            android:label="@string/pushPromotionService_name"
+            android:persistent="true"
+            android:priority="1000"
+            android:process=":PushPromotionServiceProcess">
+
+            <!-- android:persistent="true" : Useless -->
+            <intent-filter>
+                <action android:name="@string/pushPromotionService_name" />
+            </intent-filter>
+        </service>
+
         <service
             android:name=".DataSyncService"
             android:enabled="true"
             android:label="@string/dataSyncService_name"
             android:process=":DataSyncServiceProcess">
 
-            <!-- android:persistent="true" :Useless -->
+            <!-- android:persistent="true" : Useless -->
             <intent-filter>
                 <action android:name="@string/dataSyncService_name" />
             </intent-filter>
         </service>
-
-        <activity
-            android:name=".LoginActivity"
-            android:label="@string/title_activity_login"
-            android:theme="@style/FullscreenTheme" />
-
-        <activity
-            android:name=".SurveyActivity"
-            android:label="@string/title_activity_survey"
-            android:theme="@style/FullscreenTheme" />
     </application>
 
 </manifest>

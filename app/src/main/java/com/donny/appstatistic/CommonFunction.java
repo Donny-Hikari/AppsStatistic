@@ -1,11 +1,19 @@
 package com.donny.appstatistic;
 
+import android.app.ActivityManager;
+import android.app.AppOpsManager;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
+import android.os.Environment;
+import android.provider.Settings;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
@@ -16,12 +24,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * Created by Donny on 8/24/2016.
@@ -270,6 +281,8 @@ class CommonFunction {
         String boundary = "************";
         //String boundary = "******_BOUNDARY_******";
         try {
+            FileInputStream srcFile = new FileInputStream(srcFilename);
+
             // Establish http connection
             URL url = new URL(uploadUrl);
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
@@ -303,13 +316,12 @@ class CommonFunction {
                     + srcFilename.substring(srcFilename.lastIndexOf("/") + 1) + "\"; " + end);
             outdata.writeBytes(end);
 
-            FileInputStream fis = new FileInputStream(srcFilename);
             byte[] buffer = new byte[8192]; // 8k
             int count = 0;
-            while ((count = fis.read(buffer)) != -1) {
+            while ((count = srcFile.read(buffer)) != -1) {
                 outdata.write(buffer, 0, count);
             }
-            fis.close();
+            srcFile.close();
 
             outdata.writeBytes(end);
 
@@ -1050,6 +1062,10 @@ class CommonFunction {
         return sID;
     }
 
+    public static String getUserFullID(Context context) {
+        return getUserInfo(context) + "-" + CommonFunction.GetDeviceIMEI(context);
+    }
+
 
     /*
     * Survey Activity Interface for Fragment
@@ -1132,6 +1148,240 @@ class CommonFunction {
         }
 
         return true;
+    }
+
+    /*
+    * URL Push Service
+    */
+
+    private static final String sPushPath = "/Data/Push/";
+    private static final String sPushDataFilename = "PushData.dat";
+
+    public static String getPushPath(Context context) {
+        String sFullDataPath = context.getFilesDir() + sPushPath;
+        File destDir = new File(sFullDataPath);
+        if (!destDir.exists()) {
+            destDir.mkdirs();
+        }
+        return sFullDataPath;
+    }
+
+    public static String getPushDataFilename(Context context) {
+        return getPushPath(context) + sPushDataFilename;
+    }
+
+    public static boolean SavePushNumber(Context context, int myNumber) {
+        FileOutputStream fileout;
+        DataOutputStream dataout;
+
+        try {
+            fileout = new FileOutputStream(getPushDataFilename(context));
+            dataout = new DataOutputStream(fileout);
+
+            dataout.writeInt(myNumber);
+
+            dataout.close();
+            fileout.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+    }
+
+    public static int LoadPushNumber(Context context) {
+        int myNumber = 0;
+        FileInputStream filein;
+        DataInputStream datain;
+
+        try {
+            filein = new FileInputStream(getPushDataFilename(context));
+            datain = new DataInputStream(filein);
+
+            myNumber = datain.readInt();
+
+            datain.close();
+            filein.close();
+        } catch (Exception e) {
+            //e.printStackTrace();
+        }
+
+        return myNumber;
+    }
+
+    public static String ReceivePushData(Context context, String queryUrl) {
+        final String sLoacalTag = "ReceivePushData";
+        Log.d(sLoacalTag, "Querying...");
+
+        int myNumber = LoadPushNumber(context);
+
+        try {
+            // Establish http connection
+            URL url = new URL(queryUrl);
+            HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+            httpURLConnection.setDoInput(true);
+            httpURLConnection.connect();
+
+            InputStream is = httpURLConnection.getInputStream();
+            InputStreamReader isr = new InputStreamReader(is, "utf-8");
+            BufferedReader br = new BufferedReader(isr);
+
+            int number = Integer.parseInt(br.readLine());
+            String targetUrl = br.readLine();
+
+            is.close();
+            httpURLConnection.disconnect();
+
+            Log.d(sLoacalTag, String.valueOf(number));
+            Log.d(sLoacalTag, targetUrl);
+
+            if (number <= myNumber) return "";
+            SavePushNumber(context, number);
+            return targetUrl;
+        } catch (Exception e) {
+            e.printStackTrace();
+            // System.out.print(e.getMessage());
+            return "";
+        }
+    }
+
+    /*
+    * Service Status
+    */
+
+    public static boolean IsServiceAlive(Context context, String serviceClassName) {
+        final String sLocalTag = "IsServiceAlive";
+
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningServiceInfo> runningService = manager.getRunningServices(1000);
+
+        for (int i = 0; i < runningService.size(); i++) {
+            //Log.d(sLocalTag, "Class name: " + runningService.get(i).service.getClassName());
+            if (serviceClassName.equals(runningService.get(i).service.getClassName())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static void EnsureServiceRunning(Context context, Class aimClass) {
+        final String sLocalTag = "KeepServiceRunning";
+        Log.d(sLocalTag, "Checking service status: Aim Class: " + aimClass.getName());
+        if (!IsServiceAlive(context, aimClass.getName())) {
+            Log.d(sLocalTag, aimClass.getName() + " does not exist. Starting it now...");
+            context.startService(new Intent(context, aimClass));
+        }
+    }
+
+    public static void KeepServiceRunning(Context context, Class aimClass) {
+        final int nRepeatPeriod = 5 * 1000; // 5s
+        while (true) {
+            try {
+                EnsureServiceRunning(context, aimClass);
+                Thread.sleep(nRepeatPeriod);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                break;
+            }
+        }
+    }
+
+    /*
+    * Error Logging
+    */
+
+    public static void LogErrorToFile(String moduleName, String contain) {
+        FileOutputStream fileout;
+        PrintWriter pw;
+        try {
+            final String sErrorLogPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/AppStatistic/Logs/";
+            try {
+                fileout = new FileOutputStream(sErrorLogPath + moduleName + ".log", true); //append
+            } catch (FileNotFoundException e) {
+                fileout = new FileOutputStream(sErrorLogPath + moduleName + ".log", false); //create
+                e.printStackTrace();
+            }
+            pw = new PrintWriter(fileout);
+            pw.println(contain);
+            pw.flush();
+            pw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void LogErrorToFile(String moduleName, Throwable ex) {
+        FileOutputStream fileout;
+        PrintWriter pw;
+        try {
+            final String sErrorLogPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/AppStatistic/Logs/";
+            try {
+                fileout = new FileOutputStream(sErrorLogPath + moduleName + ".log", true); //append
+            } catch (FileNotFoundException e) {
+                fileout = new FileOutputStream(sErrorLogPath + moduleName + ".log", false); //create
+                e.printStackTrace();
+            }
+            pw = new PrintWriter(fileout);
+            ex.printStackTrace(pw);
+            pw.flush();
+            pw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /*
+    * Request Usage Stats Permissions
+    */
+
+    public static boolean IsPermissionGranted(Context context) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+            AppOpsManager appOps = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
+            int mode = appOps.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS,
+                    android.os.Process.myUid(), context.getPackageName());
+            return (mode == AppOpsManager.MODE_ALLOWED);
+        } else {
+            return true;
+        }
+    }
+
+    public static void requestPermission(final AppCompatActivity activity) {
+        if (!IsPermissionGranted(activity)) {
+            new AlertDialog.Builder(activity).setTitle("注意")
+                    .setMessage("本软件获取和统计应用的使用需要您的授权！不授权将无法正常工作！")
+                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                activity.startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
+                            } else {
+                                activity.finish();
+                            }
+                        }
+                    })
+                    .setNegativeButton("退出应用", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            activity.finish();
+                        }
+                    }).show();
+        }
+        /*
+        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.PACKAGE_USAGE_STATS)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{Manifest.permission.PACKAGE_USAGE_STATS},
+                    PERMISSIONS_REQUEST_PACKAGE_USAGE);
+        }
+        */
     }
 
 }

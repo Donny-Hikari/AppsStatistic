@@ -1,9 +1,12 @@
 package com.donny.appstatistic;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,18 +33,24 @@ public class LoginActivity extends AppCompatActivity {
         btnConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Context context = getApplicationContext();
-                String sID = etIDNum.getText().toString();
-                if (sID.isEmpty()) {
-                    Toast.makeText(context, "Please enter the id number.", Toast.LENGTH_LONG).show();
+                if (etIDNum.getText().toString().isEmpty()) {
+                    Toast.makeText(LoginActivity.this, "Please enter the id number.", Toast.LENGTH_LONG).show();
                     return;
                 }
-                if (!IsUserAlreadyLogin(context)) {
-                    setUserInfo(context, sID);
-                }
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                startActivity(intent);
-                LoginActivity.this.finish();
+                new AlertDialog.Builder(LoginActivity.this)
+                        .setTitle("请确认您的ID").setMessage(etIDNum.getText().toString())
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (!IsUserAlreadyLogin(LoginActivity.this)) {
+                                    setUserInfo(LoginActivity.this, etIDNum.getText().toString());
+                                }
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                startActivity(intent);
+                                LoginActivity.this.finish();
+                            }
+                        })
+                        .setNegativeButton("取消", null).show();
             }
         });
     }

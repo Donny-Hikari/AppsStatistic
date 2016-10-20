@@ -1,6 +1,6 @@
 package com.donny.appstatistic;
 
-import com.donny.appstatistic.CommonFunction.*;
+import static com.donny.appstatistic.CommonFunction.*;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -14,8 +14,6 @@ import android.util.Log;
 import java.io.File;
 import java.util.Calendar;
 
-import static com.donny.appstatistic.CommonFunction.getUserInfo;
-
 /**
  * Created by Donny on 8/27/2016.
  */
@@ -25,15 +23,21 @@ public class DataSyncService extends Service {
     private static final String uploadUrl = "http://123.207.62.26/receive_file.php";
     private static final int nRepeatPeriod = 3600 * 1000;
 
+    public static void LogToFileAndConsole(String tag, String contain) {
+        Log.d(tag, contain);
+        LogErrorToFile(tag, contain);
+    }
+
     @Override
     public void onCreate() {
-        Log.d(sTag, "onCreate");
+        LogToFileAndConsole(sTag, "onCreate");
 
-        Context context = getApplicationContext();
+        Context context = getApplication();
 
         // Start DataSyncService
         AlarmManager am = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
-        PendingIntent intent = PendingIntent.getService(context, 0, new Intent(context, DataSyncService.class), PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent intent =
+                PendingIntent.getService(context, 0, new Intent(context, DataSyncService.class), PendingIntent.FLAG_CANCEL_CURRENT);
         long nTimeNow = System.currentTimeMillis();
         am.set(AlarmManager.RTC_WAKEUP, nTimeNow + nRepeatPeriod, intent);
 
@@ -43,8 +47,8 @@ public class DataSyncService extends Service {
     public static void SyncData(Context context) {
         String sLocalTag = "SyncData";
 
-        final String sUserInfo = getUserInfo(context) + "-" + CommonFunction.GetDeviceIMEI(context);
-        Log.d(sLocalTag, "UserInfo: " + sUserInfo);
+        final String sUserInfo = getUserFullID(context);
+        LogToFileAndConsole(sLocalTag, "UserInfo: " + sUserInfo);
         Calendar calendar = Calendar.getInstance();
         MyDate myDate = new MyDate();
         String sFileToUpload;
@@ -67,12 +71,12 @@ public class DataSyncService extends Service {
             if (!CommonFunction.UploadFile(uploadUrl, sUserInfo, sFileToUpload)) {
                 File fileToUpload = new File(sFileToUpload);
                 fileToUpload.delete();
-                Log.d(sLocalTag, sFileToUpload + " has been deleted.");
+                LogToFileAndConsole(sLocalTag, sFileToUpload + " has been deleted.");
                 continue;
             }
             File fileToUpload = new File(sFileToUpload);
             fileToUpload.delete();
-            Log.d(sLocalTag, sFileToUpload + " has been deleted.");
+            LogToFileAndConsole(sLocalTag, sFileToUpload + " has been deleted.");
 
             // Upload Survey.csv
             sFileToUpload = CommonFunction.getSurveyFilename(context, myDate);
@@ -90,7 +94,7 @@ public class DataSyncService extends Service {
 
         new Thread() {
             public void run() {
-                SyncData(getApplicationContext());
+                SyncData(getApplication());
                 stopSelf();
             }
         }.start();

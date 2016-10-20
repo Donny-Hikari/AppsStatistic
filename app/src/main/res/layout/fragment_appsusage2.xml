@@ -18,7 +18,6 @@
             android:text="@string/str_appsusage"
             android:textColor="#000000"
             android:textSize="20sp" />
-
     </LinearLayout>
 
     <GridView

@@ -67,7 +67,7 @@ public class SurveyActivity extends AppCompatActivity implements CommonFunction.
 
     @Override
     public void movetoNextQuestion(int selectedIndex) {
-        selections[nProcess - 1] = selectedIndex;
+        selections[nProcess - 1] = 3 - selectedIndex;
         if (nProcess >= 21) {
             CommonFunction.SaveSurveyData(this, selections);
             new AlertDialog.Builder(this).setTitle("Survey").setMessage("恭喜您完成问卷！").
@@ -76,14 +76,16 @@ public class SurveyActivity extends AppCompatActivity implements CommonFunction.
                         public void onClick(DialogInterface dialog, int which) {
                             SurveyActivity.this.finish();
                         }
-                    }).show();
+                    }).setCancelable(false).show();
         } else {
+            ++nProcess;
             handlerNext.postDelayed(new Runnable() {
                 @Override
                 public void run() {
+                    if (nProcess > 21) return;
                     questFragm.clearSelection();
-                    questFragm.setQuestion(questionsTable[nProcess]);
-                    tvSchedule.setText(String.format("%d/21", ++nProcess));
+                    questFragm.setQuestion(questionsTable[nProcess - 1]);
+                    tvSchedule.setText(String.format("%d/21", nProcess - 1));
                 }
             }, 400);
         }

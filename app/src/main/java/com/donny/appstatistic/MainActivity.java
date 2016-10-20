@@ -1,34 +1,37 @@
 package com.donny.appstatistic;
 
+import android.Manifest;
+import android.app.Activity;
+import android.app.AppOpsManager;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
-import android.os.PowerManager;
+import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ActionMenuView;
 import android.widget.Button;
-import android.widget.GridLayout;
-import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
     private final String sTag = "MainActivity";
+    private final int VERSION = 2; //3
     //private final String sSharedPreferenceName = "myUsageStat";
     //private final String sspScrOnTime = "ScrOnTime";
     //private final String sspScrOnLastTime = "ScrOnLastTime";
@@ -85,19 +88,29 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main2);
-        startService(new Intent(this, ScreenUsageTrackService.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-        startService(new Intent(this, DataSyncService.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        switch (VERSION) {
+            case 2:
+                setContentView(R.layout.activity_main2);
+                break;
+            case 3:
+                setContentView(R.layout.activity_main3);
+                break;
+        }
+
+        CommonFunction.requestPermission(MainActivity.this);
+
+        CommonFunction.EnsureServiceRunning(this, PushPromotionService.class);
+        CommonFunction.EnsureServiceRunning(this, ScreenUsageTrackService.class);
+        CommonFunction.EnsureServiceRunning(this, DataSyncService.class);
+        //startService(new Intent(this, ScreenUsageTrackService.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        //startService(new Intent(this, PushPromotionService.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        //startService(new Intent(this, DataSyncService.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
 
         CommonFunction.MyTime beginTime = new CommonFunction.MyTime(Calendar.getInstance());
         Log.d(sTag, beginTime.toString());
 
-        //btnAppStat = (Button) findViewById(R.id.btn_AppStatistic);
-        tvScreenOnTime_hour = (TextView) findViewById(R.id.id_ScreenOnTime_Hour);
-        tvScreenOnTime_minute = (TextView) findViewById(R.id.id_ScreenOnTime_Minute);
-        btnSurvey = (Button) findViewById(R.id.id_btnToSurvey);
-
         /*
+        btnAppStat = (Button) findViewById(R.id.btn_AppStatistic);
         btnAppStat.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -109,18 +122,24 @@ public class MainActivity extends AppCompatActivity {
 
         });
         */
-        //screenOnTotalTime = CommonFunction.LoadScreenUsage_TotalTime(getApplicationContext());
-        //screenOnLastTime = CommonFunction.LoadScreenUsage_BeginStatus(getApplicationContext());
+
+        tvScreenOnTime_hour = (TextView) findViewById(R.id.id_ScreenOnTime_Hour);
+        tvScreenOnTime_minute = (TextView) findViewById(R.id.id_ScreenOnTime_Minute);
         reLoadScreenOnTime();
         registerMyReceiver();
+        //screenOnTotalTime = CommonFunction.LoadScreenUsage_TotalTime(getApplication());
+        //screenOnLastTime = CommonFunction.LoadScreenUsage_BeginStatus(getApplication());
         //handler.postDelayed(runnable, 1000);
 
-        btnSurvey.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, SurveyActivity.class));
-            }
-        });
+        if (VERSION == 2) {
+            btnSurvey = (Button) findViewById(R.id.id_btnToSurvey);
+            btnSurvey.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(MainActivity.this, SurveyActivity.class));
+                }
+            });
+        }
     }
 
     @Override
@@ -129,8 +148,25 @@ public class MainActivity extends AppCompatActivity {
         unregisterReceiver(receiver);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.actionmenu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_more:
+                startActivity(new Intent(MainActivity.this, AboutActivity.class));
+                break;
+        }
+        return true;
+    }
+
     private void reLoadScreenOnTime() {
-        CommonFunction.MyTime screenOnTime = CommonFunction.LoadScreenUsage_TotalTime(getApplicationContext());
+        CommonFunction.MyTime screenOnTime = CommonFunction.LoadScreenUsage_TotalTime(getApplication());
         //CommonFunction.MyTime screenOnTime = new CommonFunction.MyTime(Calendar.getInstance());
         //screenOnTime = screenOnTime.sub(screenOnLastTime);
         //screenOnTime = screenOnTime.add(screenOnTotalTime);

@@ -3,16 +3,18 @@
     <string name="app_name">Apps Statistic</string>
     <string name="screenUsageService_name">ScreenUsageTrackService</string>
     <string name="dataSyncService_name">DataSyncService</string>
-    <string name="str_appsusage">应用使用时间统计:</string>
+    <string name="pushPromotionService_name">PushPromotionService</string>
+    <string name="str_appsusage">应用使用详情:</string>
     <string name="str_screenusage">今日屏幕已点亮:</string>
     <string name="title_activity_login">登入</string>
     <string name="title_activity_survey">Survey</string>
+    <string name="title_activity_about">关于</string>
 
     <!-- Strings related to login -->
     <string name="prompt_idmunber">Enter the id number from provider.</string>
     <string name="prompt_input">请输入您的ID:</string>
     <string name="login_tip">• 哪里可以获得ID?</string>
-    <string name="login_tip_detail">请从软件提供商出获取。本软件仅供科学研究用途。</string>
+    <string name="login_tip_detail">请填写量表编号或向相关负责人员索取。本软件仅供科学研究用途。</string>
     <string name="login_tip2">• 请确保该ID输入正确</string>
     <string name="login_tip2_detail">该ID十分重要，一旦确认不可更改。请再三确认输入无误后继续。</string>
 

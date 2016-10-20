@@ -3,4 +3,8 @@
     <dimen name="activity_horizontal_margin">20dp</dimen>
     <dimen name="activity_vertical_margin">20dp</dimen>
     <dimen name="text_margin">16dp</dimen>
+
+    <dimen name="about_tag_size">20sp</dimen>
+    <dimen name="about_text_size">20sp</dimen>
+
 </resources>

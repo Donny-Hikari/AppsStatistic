@@ -51,20 +51,11 @@
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/id_btnToSurvey"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:text="填写问卷"
-        android:textSize="20sp" />
-
     <fragment
         android:id="@+id/id_appsusage"
         android:name="com.donny.appstatistic.AppsUsageFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/id_btnToSurvey"
         android:layout_below="@id/id_ScreenOnTime_Container"
         tools:layout="@layout/fragment_appsusage2" />
 

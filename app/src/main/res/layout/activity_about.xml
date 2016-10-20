@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/about_author"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:background="@color/colorPrimary"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/powerbyItem"
+                android:text="Copyright © 2016  Donny"
+                android:textSize="15sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/about_author">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/aboutTag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="软体信息：" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    style="@style/aboutItem"
+                    android:layout_alignParentLeft="true"
+                    android:text="My User ID"
+                    android:textColor="#000000" />
+
+                <TextView
+                    android:id="@+id/about_userId"
+                    style="@style/aboutItem"
+                    android:layout_alignParentRight="true"
+                    android:text="000000" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    style="@style/aboutItem"
+                    android:layout_alignParentLeft="true"
+                    android:text="Version"
+                    android:textColor="#000000" />
+
+                <TextView
+                    style="@style/aboutItem"
+                    android:layout_alignParentRight="true"
+                    android:text="1.0.4" />
+            </RelativeLayout>
+
+            <TextView
+                style="@style/aboutTag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="声明：" />
+
+            <TextView
+                style="@style/aboutItem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="本软件仅限于科学研究用途，由软件开发团队授权科研项目组使用。本软件开发团队保留一切版权及最终解释权。"
+                android:textColor="#000000"
+                android:textSize="20sp" />
+
+            <TextView
+                style="@style/aboutTag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="联系我们：" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/contactusItem"
+                    android:text="项目组邮箱"
+                    android:textColor="#000000" />
+
+                <TextView
+                    android:id="@+id/addr_project"
+                    style="@style/contactusItem"
+                    android:text="spateam@126.com" />
+
+                <TextView
+                    style="@style/contactusItem"
+                    android:text="项目组备用邮箱"
+                    android:textColor="#000000" />
+
+                <TextView
+                    style="@style/contactusItem"
+                    android:text="liuyueheng@csu.edu.cn" />
+
+                <TextView
+                    style="@style/contactusItem"
+                    android:text="软件开发团队邮箱"
+                    android:textColor="#000000" />
+
+                <TextView
+                    style="@style/contactusItem"
+                    android:text="donny.hikari@gmail.com" />
+
+                <TextView
+                    style="@style/contactusItem"
+                    android:text="\n" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

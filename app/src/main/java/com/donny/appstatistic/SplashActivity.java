@@ -21,7 +21,7 @@ public class SplashActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable(){
             @Override
             public void run() {
-                Context context = getApplicationContext();
+                Context context = getApplication();
                 Intent intent = null;
                 if (!IsUserAlreadyLogin(context))
                     intent = new Intent(SplashActivity.this, LoginActivity.class);

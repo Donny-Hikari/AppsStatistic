@@ -1,16 +1,13 @@
 package com.donny.appstatistic;
 
 import android.app.ActivityManager;
-import android.app.NotificationManager;
 import android.app.Service;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.hardware.display.DisplayManager;
 import android.os.IBinder;
@@ -22,17 +19,13 @@ import android.view.Display;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.SortedMap;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.TreeMap;
+
+import static com.donny.appstatistic.CommonFunction.KeepServiceRunning;
 
 /**
  * Created by Donny on 7/26/2016.
@@ -222,17 +215,17 @@ public class ScreenUsageTrackService extends Service {
     public void EnsureBeginTimeFileExist() {
         FileInputStream infile = null;
         try {
-            infile = new FileInputStream(CommonFunction.getScreenUsageBeginTimeFilename(getApplicationContext()));
+            infile = new FileInputStream(CommonFunction.getScreenUsageBeginTimeFilename(getApplication()));
             infile.close();
         } catch (FileNotFoundException e) {
-            CommonFunction.SaveScreenUsage_BeginStatus(getApplicationContext(), new CommonFunction.MyTime(Calendar.getInstance()));
+            CommonFunction.SaveScreenUsage_BeginStatus(getApplication(), new CommonFunction.MyTime(Calendar.getInstance()));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void DeleteBeginTimeFile() {
-        File beginTimeFile = new File(CommonFunction.getScreenUsageBeginTimeFilename(getApplicationContext()));
+        File beginTimeFile = new File(CommonFunction.getScreenUsageBeginTimeFilename(getApplication()));
         beginTimeFile.delete();
         Log.d(sTag, "BeginTime file has been deleted.");
     }
@@ -241,7 +234,7 @@ public class ScreenUsageTrackService extends Service {
     public void onCreate() {
         Log.d(sTag, "onCreate");
 
-        bScreenOn = getScreenState(getApplicationContext());
+        bScreenOn = getScreenState(getApplication());
         if (bScreenOn)
             EnsureBeginTimeFileExist();
         else
@@ -261,6 +254,12 @@ public class ScreenUsageTrackService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(sTag, "onStartCommand");
+
+        new Thread() {
+            public void run() {
+                KeepServiceRunning(getApplication(), PushPromotionService.class);
+            }
+        }.start();
 
         flags |= START_STICKY;
         return super.onStartCommand(intent, flags, startId);

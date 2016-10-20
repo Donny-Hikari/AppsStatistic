@@ -66,6 +66,12 @@ public class AppsUsageFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getContext().unregisterReceiver(receiver);
+    }
+
     private List<Map<String, Object>> queryAppsUsage() {
         List<Map<String, Object>> list = new ArrayList<>();
         Cursor cs = CommonFunction.LoadAllAppsUsage(getContext());
