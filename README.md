@@ -14,13 +14,20 @@ An application to record your usage of the screen and your apps on your phone.
 
 ###Screenshot
 <div align="center">
+<b>Splash Screen & Login Activity</b><br/>
 <img src="/docs/v2.splash_screen.png" alt="Splash Screen" height="512" />
 <img src="/docs/v2.login_screen.png" alt="Login Activity" height="512" />
 </div>
 <br/>
 <div align="center">
+<b>Main Activity & Survey Introduction</b><br/>
 <img src="/docs/v2.main_screen.png" alt="Main Activity" height="512" />
 <img src="/docs/v2.survey_screen1.png" alt="Survey Introduction" height="512" />
+</div>
+<div align="center">
+<b>Notification & About Activity</b><br/>
+<img src="/docs/v2.notification.jpg" alt="Notification" height="512" />
+<img src="/docs/v2.about_screen.png" alt="About Activity" height="512" />
 </div>
 
 ###Design

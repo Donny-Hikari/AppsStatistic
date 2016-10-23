@@ -1,21 +1,11 @@
 package com.donny.appstatistic;
 
-import android.Manifest;
-import android.app.Activity;
-import android.app.AppOpsManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.Settings;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -102,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
         CommonFunction.EnsureServiceRunning(this, PushPromotionService.class);
         CommonFunction.EnsureServiceRunning(this, ScreenUsageTrackService.class);
         CommonFunction.EnsureServiceRunning(this, DataSyncService.class);
+        CommonFunction.SetCoreServicesAlarm(this);
         //startService(new Intent(this, ScreenUsageTrackService.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         //startService(new Intent(this, PushPromotionService.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         //startService(new Intent(this, DataSyncService.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));

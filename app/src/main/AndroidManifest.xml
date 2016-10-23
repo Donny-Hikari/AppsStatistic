@@ -79,7 +79,7 @@
             android:label="@string/pushPromotionService_name"
             android:persistent="true"
             android:priority="1000"
-            android:process=":PushPromotionServiceProcess">
+            android:process=":PushPromotionServiceProcess" >
 
             <!-- android:persistent="true" : Useless -->
             <intent-filter>
@@ -91,8 +91,9 @@
             android:name=".DataSyncService"
             android:enabled="true"
             android:label="@string/dataSyncService_name"
-            android:process=":DataSyncServiceProcess">
+            android:process=":DataSyncServiceProcess" >
 
+            <!-- android:process=".DataSyncServiceProcess" -->
             <!-- android:persistent="true" : Useless -->
             <intent-filter>
                 <action android:name="@string/dataSyncService_name" />

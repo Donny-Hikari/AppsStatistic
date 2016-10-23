@@ -1,7 +1,5 @@
 package com.donny.appstatistic;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +15,7 @@ public class AppStatisticBootReceiver extends BroadcastReceiver {
         context.startService(new Intent(context, ScreenUsageTrackService.class));
         context.startService(new Intent(context, PushPromotionService.class));
         context.startService(new Intent(context, DataSyncService.class));
+        CommonFunction.SetCoreServicesAlarm(context);
     }
 
 }

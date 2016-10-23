@@ -33,6 +33,7 @@ import static com.donny.appstatistic.CommonFunction.KeepServiceRunning;
 public class ScreenUsageTrackService extends Service {
 
     private static final String sTag = "ScreenUsageTrackService";
+    private static boolean bRunning = false;
 
     private static final String sAppsUsageUpdated = "com.donny.appstatistic.appsUsageUpdated";
     //private static final String sSharedPreferenceName = "myUsageStat";
@@ -233,7 +234,10 @@ public class ScreenUsageTrackService extends Service {
     @Override
     public void onCreate() {
         Log.d(sTag, "onCreate");
+        super.onCreate();
+    }
 
+    public void initializeReceiver() {
         bScreenOn = getScreenState(getApplication());
         if (bScreenOn)
             EnsureBeginTimeFileExist();
@@ -247,21 +251,23 @@ public class ScreenUsageTrackService extends Service {
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         filter.addAction(Intent.ACTION_TIME_TICK);
         registerReceiver(receiver, filter);
-
-        super.onCreate();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(sTag, "onStartCommand");
 
-        new Thread() {
-            public void run() {
-                KeepServiceRunning(getApplication(), PushPromotionService.class);
-            }
-        }.start();
+        if (!bRunning) {
+            bRunning = true;
+            initializeReceiver();
+            new Thread() {
+                public void run() {
+                    KeepServiceRunning(getApplication(), PushPromotionService.class);
+                }
+            }.start();
+        }
 
-        flags |= START_STICKY;
+        flags |= START_STICKY | START_CONTINUATION_MASK;
         return super.onStartCommand(intent, flags, startId);
     }
 

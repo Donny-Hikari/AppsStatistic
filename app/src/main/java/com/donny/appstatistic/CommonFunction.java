@@ -1,7 +1,9 @@
 package com.donny.appstatistic;
 
 import android.app.ActivityManager;
+import android.app.AlarmManager;
 import android.app.AppOpsManager;
+import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -328,6 +330,8 @@ class CommonFunction {
             outdata.writeBytes(twoHyphens + boundary + twoHyphens + end);
             outdata.flush();
             outdata.close();
+
+            Log.d(sLoacalTag, "File " + srcFilename + " transmitted.");
 
             // Obtain reply
             InputStream is = httpURLConnection.getInputStream();
@@ -1151,6 +1155,141 @@ class CommonFunction {
     }
 
     /*
+    * Survey Record
+    */
+
+    public static String getSurveyRecordFilename(Context context, MyDate myDate) {
+        return getSurveyPath(context) + "SurveyRecord_" + myDate.getDateWithoutSymbol() + ".rec";
+    }
+
+    public static String getSurveyRecordFilenameToday(Context context) {
+        Calendar calendar = Calendar.getInstance();
+        int dayofWeek = calendar.get(Calendar.DAY_OF_WEEK);
+        calendar.add(Calendar.DATE, -dayofWeek + 1);
+        return getSurveyRecordFilename(context, new MyDate(calendar));
+    }
+
+    public static boolean IsSurveyFinished(Context context) {
+        File file = new File(getSurveyRecordFilenameToday(context));
+        return file.exists();
+    }
+
+    public static boolean SetSurveyRecorded(Context context) {
+        FileOutputStream outfile = null;
+        try {
+            outfile = new FileOutputStream(getSurveyRecordFilenameToday(context)); // create mode
+            outfile.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    /*
+    * Survey Notification Pushed
+    */
+
+    public static String getSurveyNotificationRecordFilename(Context context) {
+        return getSurveyPath(context) + "Survey_NotificationRecord.rec";
+    }
+
+    public static boolean IsSurveyNotificationPushed(Context context) {
+        Log.d("IsSurveyNotifyPushed", "Loading Push Date...");
+
+        FileInputStream infile = null;
+        DataInputStream indata = null;
+        try {
+            infile = new FileInputStream(getSurveyNotificationRecordFilename(context)); // open mode
+            indata = new DataInputStream(infile);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+            try {
+                if (infile != null) infile.close();
+                if (indata != null) indata.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            return false;
+        }
+
+        MyDate latestDate;
+        try {
+            latestDate = MyDate.parseDate(readChars(indata, 10));
+        } catch (IOException e) {
+            e.printStackTrace();
+            try {
+                infile.close();
+                indata.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            return false;
+        }
+        try {
+            infile.close();
+            indata.close();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+
+        Log.d("IsSurveyNotifyPushed", "Latest Push Date " + latestDate);
+        return latestDate.compare(new MyDate(Calendar.getInstance())) == 0;
+    }
+
+    public static boolean SetSurveyNotificationPushed(Context context) {
+        Log.d("SetSurveyNotifyPushed", "Saving Push Date...");
+
+        FileOutputStream outfile = null;
+        DataOutputStream outdata = null;
+        try {
+            outfile = new FileOutputStream(getSurveyNotificationRecordFilename(context)); // create mode
+            outdata = new DataOutputStream(outfile);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+            try {
+                if (outfile != null) outfile.close();
+                if (outdata != null) outdata.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            return false;
+        }
+
+        final String todate = new MyDate(Calendar.getInstance()).toString();
+        try {
+            outdata.writeChars(todate);
+        } catch (IOException e) {
+            e.printStackTrace();
+            try {
+                outfile.close();
+                outdata.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            return false;
+        }
+        try {
+            outfile.close();
+            outdata.close();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+
+        Log.d("SetSurveyNotifyPushed", "Latest Push Date Updated as " + todate);
+        return true;
+    }
+
+    /*
     * URL Push Service
     */
 
@@ -1297,20 +1436,27 @@ class CommonFunction {
         PrintWriter pw;
         try {
             final String sErrorLogPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/AppStatistic/Logs/";
+            File destDir = new File(sErrorLogPath);
+            if (!destDir.exists()) {
+                if (!destDir.mkdirs()) {
+                    Log.d("LogErrorToFile", String.format("Fail to create folder %s.", sErrorLogPath));
+                }
+            }
             try {
                 fileout = new FileOutputStream(sErrorLogPath + moduleName + ".log", true); //append
             } catch (FileNotFoundException e) {
                 fileout = new FileOutputStream(sErrorLogPath + moduleName + ".log", false); //create
-                e.printStackTrace();
+                //e.printStackTrace();
             }
             pw = new PrintWriter(fileout);
             pw.println(contain);
             pw.flush();
             pw.close();
+            fileout.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 
@@ -1382,6 +1528,19 @@ class CommonFunction {
                     PERMISSIONS_REQUEST_PACKAGE_USAGE);
         }
         */
+    }
+
+    /*
+    * Set CoreServices Alarm
+    */
+
+    public static void SetCoreServicesAlarm(Context context) {
+        final int nRepeatPeriod = 60 * 1000;
+        AlarmManager am = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
+        PendingIntent intent =
+                PendingIntent.getService(context, 0, new Intent(context, ScreenUsageTrackService.class), PendingIntent.FLAG_CANCEL_CURRENT);
+        long nTimeNow = System.currentTimeMillis();
+        am.setRepeating(AlarmManager.RTC_WAKEUP, nTimeNow + nRepeatPeriod, nRepeatPeriod, intent);
     }
 
 }

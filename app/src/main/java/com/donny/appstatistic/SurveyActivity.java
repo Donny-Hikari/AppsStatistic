@@ -70,6 +70,7 @@ public class SurveyActivity extends AppCompatActivity implements CommonFunction.
         selections[nProcess - 1] = 3 - selectedIndex;
         if (nProcess >= 21) {
             CommonFunction.SaveSurveyData(this, selections);
+            CommonFunction.SetSurveyRecorded(this);
             new AlertDialog.Builder(this).setTitle("Survey").setMessage("恭喜您完成问卷！").
                     setPositiveButton("确定", new DialogInterface.OnClickListener() {
                         @Override
