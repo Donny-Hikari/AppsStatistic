@@ -15,6 +15,7 @@ import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
 import java.io.File;
+import java.util.Calendar;
 
 import static com.donny.appstatistic.CommonFunction.*;
 
@@ -59,6 +60,10 @@ public class PushPromotionService extends Service {
         if (mNotificationManager == null) return;
         if (IsSurveyFinished(context)) return;
         if (IsSurveyNotificationPushed(context)) return;
+        MyTime curTime = new MyTime(Calendar.getInstance());
+        if ((curTime.compare(new MyTime(8, 0, 0)) < 0) &&
+                (curTime.compare(new MyTime(23, 0, 0)) > 0))
+            return;
 
         Intent intent = new Intent(context, SurveyActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, 0);
